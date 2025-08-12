@@ -23,7 +23,15 @@ def setup_timer(name,timer_def):
             timer_def: a dictionary containing the timer's definition
     """
     if timer_def.get('long'):
-        timer_registry[name] = LongTimer(timer_def)
+        if isinstance(timer_def.get('long'),str):
+            if timer_def.get('long').lower() == 'false':
+                timer_registry[name] = ShortTimer(timer_def)
+            else:
+                timer_registry[name] = LongTimer(timer_def)        
+        elif timer_def.get('long'):
+            timer_registry[name] = LongTimer(timer_def)        
+        else:
+            timer_registry[name] = ShortTimer(timer_def)
     else:
         timer_registry[name] = ShortTimer(timer_def)
 
@@ -85,16 +93,22 @@ class Timer():
         Stops the timer
     """
     def __init__(self,timer_def):
-        exec(f'from {timer_def.get("library")} import {timer_def.get("action")}')
-        self.action = locals()[timer_def.get('action')]
-        if isinstance(timer_def.get('running'),str):
-            if timer_def.get('running').lower() == 'false':
-                self.is_set = False
-            else:
-                self.is_set = True
+        if timer_def.get("library"):
+            exec(f'from {timer_def.get("library")} import {timer_def.get("action")}')
         else:
-            self.is_set = timer_def.get('running')
-        
+            exec(f'from .. import {timer_def.get("action")}') # TODO check with package installed
+        self.action = locals()[timer_def.get('action')]
+        if timer_def.get('running'):
+            if isinstance(timer_def.get('running'),str):
+                if timer_def.get('running').lower() == 'false':
+                    self.is_set = False
+                else:
+                    self.is_set = True
+            else:
+                self.is_set = timer_def.get('running')
+        else:
+            self.is_set = False
+
     def __repr__(self):
         return_string = f' Type:{self.__class__.__name__}\n'
         return_string +=f'  Is set:{self.is_set}\n'
@@ -232,7 +246,7 @@ class LongTimer(Timer):
 
     def start(self):
         """Stars the timer with the correct expiation"""
-        if self.get('interval'):
+        if self.interval:
             self.expiration = time.time() + self.interval
         else:
             self.expiration = self.expiration
