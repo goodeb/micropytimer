@@ -86,18 +86,24 @@ class Timer():
         The function to be executed when the timer expires
     is_set: bool
         Whether the timer is set. Determines if the timer is checked or not
-    
+    args: any
+        Optional. Arguments to be passed to the function defined by action
+        
     Methods
     -------
     stop()
         Stops the timer
     """
     def __init__(self,timer_def):
+        """
+        
+        """
         if timer_def.get("library"):
             exec(f'from {timer_def.get("library")} import {timer_def.get("action")}')
         else:
             exec(f'from .. import {timer_def.get("action")}') # TODO check with package installed
         self.action = locals()[timer_def.get('action')]
+        
         if timer_def.get('running'):
             if isinstance(timer_def.get('running'),str):
                 if timer_def.get('running').lower() == 'false':
@@ -108,6 +114,8 @@ class Timer():
                 self.is_set = timer_def.get('running')
         else:
             self.is_set = False
+
+        self.args = timer_def.get('args')
 
     def __repr__(self):
         return_string = f' Type:{self.__class__.__name__}\n'
@@ -147,7 +155,9 @@ class ShortTimer(Timer):
         The number of milliseconds after starting when the timer will fire
     expiration: int
         A fixed clock time after an arbitrary zero when the timer will fire
-
+    args: any
+        Optional. Arguments to be passed to the function defined by action
+    
     Methods
     -------
     start()
@@ -162,6 +172,8 @@ class ShortTimer(Timer):
         from now.
     """
     def __init__(self,timer_def):
+        """
+        """
         if timer_def.get('interval'):
             self.interval = timer_def.get('interval')
             self.expiration = time.ticks_ms() + self.interval
@@ -186,7 +198,13 @@ class ShortTimer(Timer):
         now = time.ticks_ms()
         if time.ticks_diff(now, self.expiration) > 0 and self.is_set:
             self.is_set = False # timers are one shot by default
-            self.action() # if timer needs to repeat, reset it in action fn
+            if self.args is not None:
+                if list is type(self.args):
+                   self.action(*self.args)
+                else:
+                    self.action(self.args)
+            else:
+                self.action() # if timer needs to repeat, reset it in the function action
     
     def override_expiration(self, interval: int):
         """
@@ -221,7 +239,9 @@ class LongTimer(Timer):
         The number of seconds after starting when the timer will fire
     expiration: int
         A fixed clock time in seconds since epoch start when the timer will fire
-
+    args: any
+        Arguments to be passed to the function defined by action
+    
     Methods
     -------
     start()
@@ -236,6 +256,8 @@ class LongTimer(Timer):
         from now.
     """
     def __init__(self,timer_def):
+        """
+        """
         if timer_def.get('interval'):
             self.interval = timer_def.get('interval')
             self.expiration = time.time() + self.interval
@@ -260,7 +282,13 @@ class LongTimer(Timer):
         now = time.time()
         if now > self.expiration and self.is_set:
             self.is_set = False # timers are one shot by default
-            self.action() # if timer needs to repeat, reset it in action fn
+            if self.args is not None:
+                if list is type(self.args):
+                   self.action(*self.args)
+                else:
+                    self.action(self.args)
+            else:
+                self.action() # if timer needs to repeat, reset it in the function action
 
     def override_expiration(self, interval: int):
         """

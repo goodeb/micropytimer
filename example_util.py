@@ -7,13 +7,13 @@ external utils code for example code showing how to use micropytimer library
 
 """
 
-from micropytimer import setup_timer, start_timer
+from src.micropytimer import setup_timer, start_timer
 
-def fire_one_shot():
-    print('one shot timer fired')
+def fire_one_shot(arg):
+    print(f'one shot timer fired with arg of {arg}')
 
-def fire_repeating():
-    print('repeating timer fired')
+def fire_repeating(a,b):
+    print(f'repeating timer fired with two args {a} and {b}')
     start_timer('repeating')
 
 def mark_minute():
