@@ -95,13 +95,7 @@ class Timer():
         Stops the timer
     """
     def __init__(self,timer_def):
-        """
-        
-        """
-        if timer_def.get("library"):
-            exec(f'from {timer_def.get("library")} import {timer_def.get("action")}')
-        else:
-            exec(f'from .. import {timer_def.get("action")}') # TODO check with package installed
+        exec(f'from {timer_def.get("library")} import {timer_def.get("action")}')
         self.action = locals()[timer_def.get('action')]
         
         if timer_def.get('running'):

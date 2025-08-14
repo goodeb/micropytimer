@@ -7,7 +7,7 @@ external utils code for example code showing how to use micropytimer library
 
 """
 
-from src.micropytimer import setup_timer, start_timer
+from micropytimer import setup_timer, start_timer
 
 def fire_one_shot(arg):
     print(f'one shot timer fired with arg of {arg}')

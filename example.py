@@ -7,7 +7,7 @@ example code showing how to use micropytimer library
 
 """
 
-from src.micropytimer import setup_timer, check_timers, show_timers
+from micropytimer import setup_timer, check_timers, show_timers
 import time
 
 timers = {"one_shot":{"interval":10,
