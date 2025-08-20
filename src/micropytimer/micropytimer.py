@@ -170,7 +170,7 @@ class ShortTimer(Timer):
         """
         if timer_def.get('interval'):
             self.interval = timer_def.get('interval')
-            self.expiration = time.ticks_ms() + self.interval
+            self.expiration = time.ticks_add(time.ticks_ms(), self.interval)
         else:
             self.interval = None
             self.expiration = timer_def.get('expiration')
@@ -179,7 +179,7 @@ class ShortTimer(Timer):
     def start(self):
         """Stars the timer with the correct expiation"""
         if self.interval:
-            self.expiration = time.ticks_ms() + self.interval
+            self.expiration = time.ticks_add(time.ticks_ms(), self.interval)
         else:
             self.expiration = self.expiration
         self.is_set = True
@@ -207,7 +207,7 @@ class ShortTimer(Timer):
         Args:
             interval: integer number of second from now to expire
         """
-        self.expiration = time.ticks_ms() + interval
+        self.expiration = time.ticks_add(time.ticks_ms(), interval)
 
         
 class LongTimer(Timer):
