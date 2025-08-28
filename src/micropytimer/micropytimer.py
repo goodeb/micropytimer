@@ -15,6 +15,12 @@ def check_timers():
     for name, timer in timer_registry.items():
         timer.check_timer()
 
+def force_restart():
+    """Iterate through all registered timers and restart any that are running"""
+    for name, timer in timer_registry.items():
+        if timer.is_set:
+            timer.start()
+
 def setup_timer(name,timer_def):
     """
     Add a new timer to the timer registry
