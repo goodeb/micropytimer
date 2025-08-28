@@ -34,7 +34,6 @@ for name,timer_def in timers.items():
 
 # create a fixed time at the next time a new minute rolls over, and set a timer to fire at that time
 now = time.localtime()
-print(now)
 expiration_time = time.mktime((now[0], now[1], now[2], now[3], now[4], 0, now[6], now[7],now[8])) + 60
 
 setup_timer('zero_seconds',{"expiration":expiration_time,
