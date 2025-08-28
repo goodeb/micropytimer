@@ -15,12 +15,6 @@ def check_timers():
     for name, timer in timer_registry.items():
         timer.check_timer()
 
-def force_restart():
-    """Iterate through all registered timers and restart any that are running"""
-    for name, timer in timer_registry.items():
-        if timer.is_set:
-            timer.start()
-
 def setup_timer(name,timer_def):
     """
     Add a new timer to the timer registry
@@ -47,7 +41,11 @@ def start_timer(name):
         Args:
             name: string with the timer name to be started
     """
-    timer_registry.get(name).start()
+    if timer_registry.get(name):
+        timer_registry.get(name).start()
+    else:
+        raise NameError(f'No timer of name {name} in registry. All timers \
+                          should be created using the setup_timer() function')
 
 def stop_timer(name):
     """
@@ -55,7 +53,11 @@ def stop_timer(name):
         Args:
             name: string with the timer name to be stope
     """
-    timer_registry.get(name).stop()
+    if timer_registry.get(name):
+        timer_registry.get(name).stop()
+    else:
+        raise NameError(f'No timer of name {name} in registry. All timers \
+                          should be created using the setup_timer() function')
 
 def trigger_timer(name):
     """
@@ -63,8 +65,13 @@ def trigger_timer(name):
         Args:
             name: string with the timer name to be triggered
     """
-    timer_registry.get(name).stop()
-    timer_registry.get(name).action()
+    if timer_registry.get(name):
+        timer_registry.get(name).stop()
+        timer_registry.get(name).action()
+    else:
+        raise NameError(f'No timer of name {name} in registry. All timers \
+                          should be created using the setup_timer() function')
+  
 
 def override_timer_expiration(name, interval):
     """
@@ -74,7 +81,18 @@ def override_timer_expiration(name, interval):
         interval: time till new expiration in milliseconds if ShortTimer
                   seconds if LongTimer
     """
-    timer_registry.get(name).override_expiration(interval)
+    if timer_registry.get(name):
+        timer_registry.get(name).override_expiration(interval)
+    else:
+        raise NameError(f'No timer of name {name} in registry. All timers \
+                          should be created using the setup_timer() function')
+
+
+def force_restart():
+    """Iterate through all registered timers and restart any that are running"""
+    for name, timer in timer_registry.items():
+        if timer.is_set:
+            timer.start()
 
 def show_timers():
     """Shows all timers in the registry"""
@@ -84,7 +102,8 @@ def show_timers():
 class Timer():
     """
     A parent class for two other types of timers. Doesn't have a function to 
-    check the timer. NOT TO BE INSTANTIATED ON ITS OWN
+    check the timer.
+    NOT TO BE INSTANTIATED ON ITS OWN
 
     Attributes
     ----------
@@ -143,7 +162,8 @@ class ShortTimer(Timer):
     the timer won't trigger.
     Timers are by default one shot. They do not automatically restart. To
     make a looping timer, the function called by self.action should call the 
-    start_timer() method for that timer's name
+    start_timer() function for that timer's name.
+    NOT TO BE INSTANTIATED ON ITS OWN
 
     Attributes
     ----------
@@ -227,7 +247,8 @@ class LongTimer(Timer):
     the timer won't trigger.
     Timers are by default one shot. They do not automatically restart. To
     make a looping timer, the function called by self.action should call the 
-    start_timer() method for that timer's name
+    start_timer() function for that timer's name.
+    NOT TO BE INSTANTIATED ON ITS OWN
 
     Attributes
     ----------
