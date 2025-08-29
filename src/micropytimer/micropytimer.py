@@ -11,13 +11,13 @@ import time
 timer_registry = {}
 
 def check_timers():
-    """Iterate through all registered timers and call their check_timer() fn"""
+    """Iterates through all registered timers and call their check_timer() fn"""
     for name, timer in timer_registry.items():
         timer.check_timer()
 
 def setup_timer(name,timer_def):
     """
-    Add a new timer to the timer registry
+    Adds a new timer to the timer registry
         Args:
             name: a string with the name of this timer
             timer_def: a dictionary containing the timer's definition
@@ -109,11 +109,14 @@ class Timer():
     ----------
     action: callable
         The function to be executed when the timer expires
+    library: str
+        The name of the library or local python file where the function to be
+        executed can be found. If a local file do not include .py
     is_set: bool
         Whether the timer is set. Determines if the timer is checked or not
     args: any
-        Optional. Arguments to be passed to the function defined by action
-        
+        Optional. The argument, or arguments if given as a list, for the function
+        given by action.    
     Methods
     -------
     stop()
@@ -145,7 +148,7 @@ class Timer():
         return return_string
     
     def stop(self):
-        """Stops the timer before it fires"""
+        """Stops the timer before it expires"""
         self.is_set = False
 
 class ShortTimer(Timer):
@@ -169,6 +172,9 @@ class ShortTimer(Timer):
     ----------
     action: callable
         The function to be executed when the timer expires
+    library: str
+        The name of the library or local python file where the function to be
+        executed can be found. If a local file do not include .py
     is_set: bool
         Whether the timer is set. Determines if the timer is checked or not
     interval: int
@@ -176,14 +182,15 @@ class ShortTimer(Timer):
     expiration: int
         A fixed clock time after an arbitrary zero when the timer will fire
     args: any
-        Optional. Arguments to be passed to the function defined by action
+        The argument, or arguments if given as a list, for the function given
+        by action. 
     
     Methods
     -------
     start()
-        Stars the timer with the correct expiation
+        Stars the timer
     stop()
-        Stops the timer before it fires
+        Stops the timer before it expires
     check_timer()
         Evaluates whether the time has expired. If so timer is stopped and
         the action is triggered.
@@ -254,6 +261,9 @@ class LongTimer(Timer):
     ----------
     action: callable
         The function to be executed when the timer expires
+    library: str
+        The name of the library or local python file where the function to be
+        executed can be found. If a local file do not include .py
     is_set: bool
         Whether the timer is set. Determines if the timer is checked or not
     interval: int
@@ -261,14 +271,15 @@ class LongTimer(Timer):
     expiration: int
         A fixed clock time in seconds since epoch start when the timer will fire
     args: any
-        Arguments to be passed to the function defined by action
+        The argument, or arguments if given as a list, for the function given
+        by action.
     
     Methods
     -------
     start()
-        Stars the timer with the correct expiation
+        Stars the timer
     stop()
-        Stops the timer before it fires
+        Stops the timer before it expires
     check_timer()
         Evaluates whether the time has expired. If so timer is stopped and
         the action is triggered.
