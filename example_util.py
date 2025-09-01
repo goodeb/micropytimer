@@ -27,6 +27,10 @@ def fire_flipflop_B():
     print('flipflop timer B fires')
     start_timer('flipflop_A')
 
-setup_timer('flipflop_B',{"interval":2,"action":"fire_flipflop_B","library":"example_util","long":True})
+# Timers can be defined anywhere and don't have to be running to start with
+setup_timer('flipflop_B',{"interval":2,
+                          "action":"fire_flipflop_B",
+                          "library":"example_util",
+                          "long":True})
 
 

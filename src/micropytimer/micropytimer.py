@@ -91,7 +91,7 @@ def override_timer_expiration(name, interval):
 def force_restart():
     """Iterate through all registered timers and restart any that are running"""
     for name, timer in timer_registry.items():
-        if timer.is_set:
+        if timer.running:
             timer.start()
 
 def show_timers():
@@ -112,7 +112,7 @@ class Timer():
     library: str
         The name of the library or local python file where the function to be
         executed can be found. If a local file do not include .py
-    is_set: bool
+    running: bool
         Whether the timer is set. Determines if the timer is checked or not
     args: any
         Optional. The argument, or arguments if given as a list, for the function
@@ -129,19 +129,19 @@ class Timer():
         if timer_def.get('running'):
             if isinstance(timer_def.get('running'),str):
                 if timer_def.get('running').lower() == 'false':
-                    self.is_set = False
+                    self.running = False
                 else:
-                    self.is_set = True
+                    self.running = True
             else:
-                self.is_set = timer_def.get('running')
+                self.running = timer_def.get('running')
         else:
-            self.is_set = False
+            self.running = False
 
         self.args = timer_def.get('args')
 
     def __repr__(self):
         return_string = f' Type:{self.__class__.__name__}\n'
-        return_string +=f'  Is set:{self.is_set}\n'
+        return_string +=f'  Is running:{self.running}\n'
         return_string +=f'  Action:{self.action}\n'
         return_string +=f'  Interval:{self.interval}\n'
         return_string +=f'  Expiration:{self.expiration}\n'
@@ -149,7 +149,7 @@ class Timer():
     
     def stop(self):
         """Stops the timer before it expires"""
-        self.is_set = False
+        self.running = False
 
 class ShortTimer(Timer):
     """
@@ -175,7 +175,7 @@ class ShortTimer(Timer):
     library: str
         The name of the library or local python file where the function to be
         executed can be found. If a local file do not include .py
-    is_set: bool
+    running: bool
         Whether the timer is set. Determines if the timer is checked or not
     interval: int
         The number of milliseconds after starting when the timer will fire
@@ -215,7 +215,7 @@ class ShortTimer(Timer):
             self.expiration = time.ticks_add(time.ticks_ms(), self.interval)
         else:
             self.expiration = self.expiration
-        self.is_set = True
+        self.running = True
 
     def check_timer(self):
         """
@@ -223,8 +223,8 @@ class ShortTimer(Timer):
         the action is triggered.
         """
         now = time.ticks_ms()
-        if time.ticks_diff(now, self.expiration) > 0 and self.is_set:
-            self.is_set = False # timers are one shot by default
+        if time.ticks_diff(now, self.expiration) > 0 and self.running:
+            self.running = False # timers are one shot by default
             if self.args is not None:
                 if list is type(self.args):
                    self.action(*self.args)
@@ -264,7 +264,7 @@ class LongTimer(Timer):
     library: str
         The name of the library or local python file where the function to be
         executed can be found. If a local file do not include .py
-    is_set: bool
+    running: bool
         Whether the timer is set. Determines if the timer is checked or not
     interval: int
         The number of seconds after starting when the timer will fire
@@ -304,7 +304,7 @@ class LongTimer(Timer):
             self.expiration = time.time() + self.interval
         else:
             self.expiration = self.expiration
-        self.is_set = True
+        self.running = True
 
     def check_timer(self):
         """
@@ -312,8 +312,8 @@ class LongTimer(Timer):
         the action is triggered.
         """
         now = time.time()
-        if now > self.expiration and self.is_set:
-            self.is_set = False # timers are one shot by default
+        if now > self.expiration and self.running:
+            self.running = False # timers are one shot by default
             if self.args is not None:
                 if list is type(self.args):
                    self.action(*self.args)
